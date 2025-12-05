@@ -133,3 +133,35 @@ def test_add_choice_validates_constraints():
 
     with pytest.raises(Exception):
         question.add_choice('a' * 101, False)
+
+# commit 3: 2 unit tests
+@pytest.fixture
+def question_with_choices():
+    """
+    Questão com múltiplas alternativas
+    """
+    question = Question(title='Questão do Commit 3', max_selections=3)
+    choice1 = question.add_choice('a', True)
+    choice2 = question.add_choice('b', False)
+    choice3 = question.add_choice('c', True)
+    return question, [choice1, choice2, choice3]
+
+def test_correct_selected_choices(question_with_choices):
+    question, choices = question_with_choices
+
+    selected_ids = []
+    for choice in choices:
+        selected_ids.append(choice.id)
+
+    result = question.correct_selected_choices(selected_ids)
+
+    expected_ids = [choices[0].id, choices[2].id]
+    assert list(result) == expected_ids
+
+
+def test_remove_all_choices(question_with_choices):
+    question, dump = question_with_choices
+
+    question.remove_all_choices()
+
+    assert len(question.choices) == 0
